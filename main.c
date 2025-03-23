@@ -1,37 +1,27 @@
+// Online C compiler to run C program online
 #include <stdio.h>
 
 int main() {
-    int num_room, choice = 0;
-    printf("Enter Number of Rooms : ");
+    int num_room, choice = 0, no_motion_count = 0;
+    printf("Enter Number of Rooms: ");
     scanf("%d", &num_room);
 
     int house[num_room][4];
-
-    printf("\nEnter the status for each room:\n");
-    printf("1. Light (1 = ON, 0 = OFF)\n");
-    printf("2. Temperature (in °C)\n");
-    printf("3. Motion Sensor (1 = Motion Detected, 0 = No Motion)\n");
-    printf("4. Door (1 = Open, 0 = Closed)\n\n");
     for (int i = 0; i < num_room; i++) {
         printf("Room %d:\n", i + 1);
-
         printf("Light (1 = ON, 0 = OFF): ");
         scanf("%d", &house[i][0]);
-
         printf("Temperature (°C): ");
         scanf("%d", &house[i][1]);
-
-        printf("Motion Sensor (1 = Motion Detected, 0 = No Motion): ");
+        printf("Motion Sensor (1 = Detected, 0 = No Motion): ");
         scanf("%d", &house[i][2]);
-
         printf("Door (1 = Open, 0 = Closed): ");
         scanf("%d", &house[i][3]);
-
         printf("\n");
     }
 
     while (choice != 6) {
-        printf("\n1.TOGGLE LIGHT\n2.Read Temperature\n3.Check Motion Sensor\n4.Lock/Unlock Security System\n5.House Status Summary\n6.Exit\n");
+        printf("\n1. Toggle Light\n2. Read Temperature\n3. Check Motion Sensor\n4. Lock/Unlock Door System\n5. House Status Summary\n6. Exit\n");
         printf("Enter Your Choice: ");
         scanf("%d", &choice);
 
@@ -53,6 +43,9 @@ int main() {
                 scanf("%d", &room);
                 if (room >= 1 && room <= num_room) {
                     printf("The Temperature in Room %d is %d°C\n", room, house[room - 1][1]);
+                    if (house[room - 1][1] > 30) {
+                        printf("WARNING: Room %d is too hot! Consider cooling it down.\n", room);
+                    }
                 } else {
                     printf("Invalid Room Number!\n");
                 }
@@ -62,7 +55,20 @@ int main() {
                 printf("Enter the room number: ");
                 scanf("%d", &room);
                 if (room >= 1 && room <= num_room) {
-                    printf("Motion Sensor in Room %d: %s\n", room, house[room - 1][2] ? "Motion Detected" : "No Motion");
+                    if (house[room - 1][2] == 0) {
+                        printf("No Motion Detected in Room %d.\n", room);
+                        no_motion_count++;
+                    } else {
+                        printf("Motion Detected in Room %d.\n", room);
+                        no_motion_count = 0; 
+                    }
+                    if (no_motion_count >= 5) {
+                        for (int i = 0; i < num_room; i++) {
+                            house[i][3] = 0;
+                        }
+                        printf("No Motion is Detected for Long Time so the Doors are Locked.\n");
+                        no_motion_count = 0; 
+                    }
                 } else {
                     printf("Invalid Room Number!\n");
                 }
@@ -80,8 +86,9 @@ int main() {
                 break;
 
             case 5:
-                printf("\nHome Automation Status:\n");
                 printf("Room | Light | Temperature | Motion | Door\n");
+
+                int all_lights_on = 1;
                 for (int i = 0; i < num_room; i++) {
                     printf(" %2d  |  %s  |     %2d°C    |   %s  |  %s  \n",
                            i + 1,
@@ -93,7 +100,7 @@ int main() {
                 break;
 
             case 6:
-                printf("Exiting program...\n");
+                printf("Exiting program.\n");
                 return 0;
 
             default:
